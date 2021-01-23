@@ -5,13 +5,14 @@ from django.shortcuts import render
 
 def index(request):
     context = {
-        'title': 'geekShop',
+        'title': 'GeekShop',
     }
     return render(request, 'mainapp/index.html', context)
 
 
 def products(request):
     context = {
+        'title': 'GeekShop - Каталог',
         'product' : [
             {
                 'name': 'Худи черного цвета с монограммами adidas Originals',
