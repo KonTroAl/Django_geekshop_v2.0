@@ -17,3 +17,9 @@ body {
     text-decoration: none;
     color: white;
 }
+
+footer {
+    margin-top: 20px;
+    margin-left: 50px;
+    text-align: center;
+}
