@@ -68,7 +68,9 @@
                                 <p class="card-text">{{ val.short_description }}</p>
                             </div>
                             <div class="card-footer text-center">
-                                <button type="button" class="btn btn-outline-success">Отправить в корзину</button>
+                                <a href="{% url 'baskets:basket_add' val.id%}">
+                                    <button type="button" class="btn btn-outline-success">Отправить в корзину</button>
+                                </a>
                             </div>
                         </div>
                     </div>
