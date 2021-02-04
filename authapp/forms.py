@@ -35,6 +35,7 @@ class UserRegisterForm(UserCreationForm):
 
 
 class UserProfileForm(UserChangeForm):
+    avatar = forms.ImageField(widget=forms.FileInput())
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'username', 'email', 'age', 'avatar')
