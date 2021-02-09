@@ -5,6 +5,7 @@ from mainapp.models import ProductCategory
 from django import forms
 
 
+
 class UserAdminRegisterFrom(UserRegisterForm):
     avatar = forms.ImageField(widget=forms.FileInput())
 
@@ -24,7 +25,7 @@ class UserAdminProfileForm(UserProfileForm):
         self.fields['email'].widget.attrs['readonly'] = False
 
 
-class CategoryAdminCreateForm(forms.Form):
+class CategoryAdminCreateForm(forms.ModelForm):
     class Meta:
         model = ProductCategory
         fields = ('name', 'description')
@@ -38,3 +39,9 @@ class CategoryAdminCreateForm(forms.Form):
         self.fields['description'].widget.attrs['placeholder'] = 'Category description'
         for filed_name, field in self.fields.items():
             field.widget.attrs['class'] ='form-control py-4'
+
+
+class CategoryAdminUpdateForm(CategoryAdminCreateForm):
+
+    def __init__(self, *args, **kwargs):
+        super(CategoryAdminUpdateForm, self).__init__(*args, **kwargs)

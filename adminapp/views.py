@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.contrib.auth.decorators import user_passes_test
 
 from authapp.models import User
-from adminapp.forms import UserAdminRegisterFrom, UserAdminProfileForm, CategoryAdminCreateForm
+from adminapp.forms import UserAdminRegisterFrom, UserAdminProfileForm, CategoryAdminCreateForm, CategoryAdminUpdateForm
 from mainapp.models import ProductCategory
 
 
@@ -57,6 +57,7 @@ def admin_users_delete(request, id):
     user.save()
     return HttpResponseRedirect(reverse('admins:admin_users_read'))
 
+
 @user_passes_test(lambda u: u.is_superuser)
 def admin_users_recover(request, id):
     user = User.objects.get(id=id)
@@ -64,10 +65,12 @@ def admin_users_recover(request, id):
     user.save()
     return HttpResponseRedirect(reverse('admins:admin_users_read'))
 
+
 @user_passes_test(lambda u: u.is_superuser)
 def admin_category_read(request):
     context = {'categories': ProductCategory.objects.all()}
     return render(request, 'adminapp/admin-category-read.html', context)
+
 
 @user_passes_test(lambda u: u.is_superuser)
 def admin_category_create(request):
@@ -80,3 +83,26 @@ def admin_category_create(request):
         form = CategoryAdminCreateForm()
     context = {'form': form}
     return render(request, 'adminapp/admin-category-create.html', context)
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_category_update(request, id):
+    category = ProductCategory.objects.get(id=id)
+    if request.method == 'POST':
+        form = CategoryAdminUpdateForm(data=request.POST, instance=category)
+        if form.is_valid():
+            form.save()
+            return CategoryAdminUpdateForm(reverse('admins:admin_category_read'))
+    else:
+        form = CategoryAdminUpdateForm(instance=category)
+    context = {
+        'form': form,
+        'current_category': category,
+    }
+    return render(request, 'adminapp/admin-category-update-delete.html', context)
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_category_delete(request, id):
+    category = ProductCategory.objects.get(id=id)
+    category.delete()
+    return HttpResponseRedirect(reverse('admins:admin_category_read'))
