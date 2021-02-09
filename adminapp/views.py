@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.contrib.auth.decorators import user_passes_test
 
 from authapp.models import User
-from adminapp.forms import UserAdminRegisterFrom, UserAdminProfileForm
+from adminapp.forms import UserAdminRegisterFrom, UserAdminProfileForm, CategoryAdminCreateForm
 from mainapp.models import ProductCategory
 
 
@@ -68,3 +68,15 @@ def admin_users_recover(request, id):
 def admin_category_read(request):
     context = {'categories': ProductCategory.objects.all()}
     return render(request, 'adminapp/admin-category-read.html', context)
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_category_create(request):
+    if request.method == 'POST':
+        form = CategoryAdminCreateForm(data=request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('admins:admin_category_read'))
+    else:
+        form = CategoryAdminCreateForm()
+    context = {'form': form}
+    return render(request, 'adminapp/admin-category-create.html', context)
