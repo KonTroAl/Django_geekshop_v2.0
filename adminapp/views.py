@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import user_passes_test
 
 from authapp.models import User
 from adminapp.forms import UserAdminRegisterFrom, UserAdminProfileForm
+from mainapp.models import ProductCategory
 
 
 @user_passes_test(lambda u: u.is_superuser)
@@ -55,3 +56,15 @@ def admin_users_delete(request, id):
     user.is_active = False
     user.save()
     return HttpResponseRedirect(reverse('admins:admin_users_read'))
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_users_recover(request, id):
+    user = User.objects.get(id=id)
+    user.is_active = True
+    user.save()
+    return HttpResponseRedirect(reverse('admins:admin_users_read'))
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_category_read(request):
+    context = {'categories': ProductCategory.objects.all()}
+    return render(request, 'adminapp/admin-category-read.html', context)

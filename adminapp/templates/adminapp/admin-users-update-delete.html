@@ -54,5 +54,12 @@
                 </a>
             </div>
         </div>
+        <div class="row">
+            <div class="col-lg-12" style="margin-top: 33px;">
+                <a href="{% url 'admins:admin_users_recover' current_user.id %}">
+                    <button class="btn btn-info btn-block">Восстановить</button>
+                </a>
+            </div>
+        </div>
     </div>
 {% endblock %}

@@ -21,3 +21,4 @@ class UserAdminProfileForm(UserProfileForm):
         super(UserAdminProfileForm, self).__init__(*args, **kwargs)
         self.fields['username'].widget.attrs['readonly'] = False
         self.fields['email'].widget.attrs['readonly'] = False
+
