@@ -1,0 +1,37 @@
+{% extends 'adminapp/base.html' %}
+
+{% block content %}
+    <h1 class="mt-4">Редактирование категории | {{ current_category.name }}</h1>
+    <div class="card-body">
+        <form action="{% url 'admins:admin_сategory_update' current_category.id %}" method="post">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="col-lg-12">
+                    <div class="form-group">
+                        <label class="small mb-1" for="{{ form.name.id_for_lable }}">Наименование категории</label>
+                        {{ form.name }}
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="form-group">
+                        <label class="small mb-1" for="{{ form.description.id_for_lable }}">Описание категории</label>
+                        {{ form.description }}
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col-lg-12" style="margin-top: 33px;">
+                    <input class="btn btn-info btn-block" type="submit" value="Сохранить">
+                </div>
+
+            </div>
+        </form>
+        <div class="row">
+            <div class="col-lg-12" style="margin-top: 33px;">
+                <a href="{% url 'admins:admin_category_delete' current_category.id %}">
+                    <button class="btn btn-danger btn-block">Удалить</button>
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
