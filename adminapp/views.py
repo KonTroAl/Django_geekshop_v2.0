@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.contrib.auth.decorators import user_passes_test
 
 from authapp.models import User
-from adminapp.forms import UserAdminRegisterFrom, UserAdminProfileForm, CategoryAdminCreateForm, CategoryAdminUpdateForm
+from adminapp.forms import UserAdminRegisterFrom, UserAdminProfileForm, CategoryAdminForm
 from mainapp.models import ProductCategory
 
 
@@ -75,12 +75,12 @@ def admin_category_read(request):
 @user_passes_test(lambda u: u.is_superuser)
 def admin_category_create(request):
     if request.method == 'POST':
-        form = CategoryAdminCreateForm(data=request.POST)
+        form = CategoryAdminForm(data=request.POST)
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse('admins:admin_category_read'))
     else:
-        form = CategoryAdminCreateForm()
+        form = CategoryAdminForm()
     context = {'form': form}
     return render(request, 'adminapp/admin-category-create.html', context)
 
@@ -89,12 +89,12 @@ def admin_category_create(request):
 def admin_category_update(request, id):
     category = ProductCategory.objects.get(id=id)
     if request.method == 'POST':
-        form = CategoryAdminUpdateForm(data=request.POST, instance=category)
+        form = CategoryAdminForm(data=request.POST, instance=category)
         if form.is_valid():
             form.save()
-            return CategoryAdminUpdateForm(reverse('admins:admin_category_read'))
+            return HttpResponseRedirect(reverse('admins:admin_category_read'))
     else:
-        form = CategoryAdminUpdateForm(instance=category)
+        form = CategoryAdminForm(instance=category)
     context = {
         'form': form,
         'current_category': category,
