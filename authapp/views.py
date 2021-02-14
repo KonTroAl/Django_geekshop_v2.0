@@ -1,13 +1,22 @@
 from django.shortcuts import render, HttpResponseRedirect
 from django.contrib import auth, messages
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
+from django.views.generic.list import ListView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
+
 
 from authapp.forms import UserLoginForm, UserRegisterForm, UserProfileForm
 from basketapp.models import Basket
+from authapp.models import User
 
 
 # Create your views here.
+
+# class UserLoginView(FormView):
+#     template_name = 'authapp/login.html'
+#     form_class = UserLoginForm
+#     success_url = reverse_lazy('index')
 
 def login(request):
     if request.method == 'POST':
@@ -26,18 +35,24 @@ def login(request):
     return render(request, 'authapp/login.html', context)
 
 
-def register(request):
-    if request.method == 'POST':
-        form = UserRegisterForm(data=request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Вы успешно зарегестрировались!')
-            return HttpResponseRedirect(reverse('auth:login'))
-    else:
-        form = UserRegisterForm()
-    context = {'form': form}
+class UserCreateView(CreateView):
+    model = User
+    template_name = 'authapp/register.html'
+    form_class = UserRegisterForm
+    success_url = reverse_lazy('auth:login')
 
-    return render(request, 'authapp/register.html', context)
+# def register(request):
+#     if request.method == 'POST':
+#         form = UserRegisterForm(data=request.POST)
+#         if form.is_valid():
+#             form.save()
+#             messages.success(request, 'Вы успешно зарегестрировались!')
+#             return HttpResponseRedirect(reverse('auth:login'))
+#     else:
+#         form = UserRegisterForm()
+#     context = {'form': form}
+#
+#     return render(request, 'authapp/register.html', context)
 
 
 def logout(request):
