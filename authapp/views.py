@@ -4,6 +4,7 @@ from django.urls import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
+from django.utils.decorators import method_decorator
 
 
 from authapp.forms import UserLoginForm, UserRegisterForm, UserProfileForm
@@ -59,18 +60,28 @@ def logout(request):
     auth.logout(request)
     return HttpResponseRedirect(reverse('index'))
 
-@login_required
-def profile(request):
-    if request.method == 'POST':
-        form = UserProfileForm(data=request.POST, files=request.FILES, instance=request.user)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse('auth:profile'))
-    else:
-        form = UserProfileForm(instance=request.user)
-    context = {
-        'title': 'Profile',
-        'form': form,
-        'baskets': Basket.objects.filter(user=request.user),
-    }
-    return render(request, 'authapp/profile.html', context)
+class UserProfileView(UpdateView):
+    model = User
+    template_name = 'authapp/profile.html'
+    form_class = UserProfileForm
+    success_url = reverse_lazy('auth:profile')
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(UserProfileView, self).dispatch(request, *args, **kwargs)
+
+# @login_required
+# def profile(request):
+#     if request.method == 'POST':
+#         form = UserProfileForm(data=request.POST, files=request.FILES, instance=request.user)
+#         if form.is_valid():
+#             form.save()
+#             return HttpResponseRedirect(reverse('auth:profile'))
+#     else:
+#         form = UserProfileForm(instance=request.user)
+#     context = {
+#         'title': 'Profile',
+#         'form': form,
+#         'baskets': Basket.objects.filter(user=request.user),
+#     }
+#     return render(request, 'authapp/profile.html', context)
