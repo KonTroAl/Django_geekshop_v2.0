@@ -30,10 +30,25 @@ class ProductsList(ListView):
     ordering = 'name'
 
 
+
     def get_context_data(self, **kwargs):
         context = super(ProductsList, self).get_context_data(**kwargs)
         context['categories'] = ProductCategory.objects.all()
         return context
+
+    def get_queryset(self, product):
+
+        self.queryset = product
+        return self.queryset
+
+def category_number(request, category_id=None):
+    if category_id:
+        products = Product.objects.filter(category_id=category_id)
+    else:
+        products = Product.objects.all()
+    return products
+
+product_list = ProductsList.get_queryset(category_number())
 
 # def products(request, category_id=None, page=1):
 #     if category_id:

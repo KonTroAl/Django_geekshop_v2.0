@@ -64,7 +64,9 @@ class UserProfileView(UpdateView):
     model = User
     template_name = 'authapp/profile.html'
     form_class = UserProfileForm
-    success_url = reverse_lazy('auth:profile')
+
+    def get_success_url(self):
+        return reverse_lazy('auth:profile', args=[self.kwargs['pk']])
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
