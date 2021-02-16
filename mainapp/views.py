@@ -31,6 +31,10 @@ class ProductsList(ListView):
     ordering = 'name'
     queryset = Product.objects.all()
 
+    # def __init__(self, category_id):
+    #     super(ProductsList, self).__init__(category_id)
+    #     self.category_id = category_id
+
 
 
     def get_context_data(self, **kwargs):
@@ -39,11 +43,12 @@ class ProductsList(ListView):
         return context
 
     def get_queryset(self):
-        self.category_id = get_object_or_404(ProductsList, category_id=self.kwargs['category_id'])
-        if self.category_id:
+        try:
+            self.category_id = get_object_or_404(ProductCategory, id=self.kwargs['pk'])
             return Product.objects.filter(category_id=self.category_id)
-        else:
+        except KeyError:
             return Product.objects.all()
+
 
 categories = ProductCategory.objects.all()
 
