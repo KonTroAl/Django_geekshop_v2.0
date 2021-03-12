@@ -11,6 +11,7 @@ from django.http import Http404
 from authapp.forms import UserLoginForm, UserRegisterForm, UserProfileForm
 from basketapp.models import Basket
 from authapp.models import User
+from authapp.utils import send_verify_mail
 
 
 # Create your views here.
@@ -37,24 +38,25 @@ def login(request):
     return render(request, 'authapp/login.html', context)
 
 
-class UserCreateView(CreateView):
-    model = User
-    template_name = 'authapp/register.html'
-    form_class = UserRegisterForm
-    success_url = reverse_lazy('auth:login')
+# class UserCreateView(CreateView):
+#     model = User
+#     template_name = 'authapp/register.html'
+#     form_class = UserRegisterForm
+#     success_url = reverse_lazy('auth:login')
 
-# def register(request):
-#     if request.method == 'POST':
-#         form = UserRegisterForm(data=request.POST)
-#         if form.is_valid():
-#             form.save()
-#             messages.success(request, 'Вы успешно зарегестрировались!')
-#             return HttpResponseRedirect(reverse('auth:login'))
-#     else:
-#         form = UserRegisterForm()
-#     context = {'form': form}
-#
-#     return render(request, 'authapp/register.html', context)
+def register(request):
+    if request.method == 'POST':
+        form = UserRegisterForm(data=request.POST)
+        if form.is_valid():
+            user = form.save()
+            send_verify_mail(user)
+            messages.success(request, 'Вы успешно зарегестрировались! Проверьте почту для активации аккаунта на нашем сайте!')
+            return HttpResponseRedirect(reverse('auth:login'))
+    else:
+        form = UserRegisterForm()
+    context = {'form': form}
+
+    return render(request, 'authapp/register.html', context)
 
 
 def logout(request):
@@ -90,10 +92,13 @@ class UserProfileView(UpdateView):
 #     return render(request, 'authapp/profile.html', context)
 
 def verify(request, user_id, hash):
-    user = User.objects.get(pk=user_id)
+    user = User.objects.get(id=user_id)
     if user.activation_key == hash and not user.is_activation_key_expired():
         user.is_active = True
         user.activation_key = None
         user.save()
+        auth.login(request, user)
+        messages.success(request, 'Вы авторизованы, активация аккаунта прошла успешно!')
         return HttpResponseRedirect(reverse('index'))
-    raise Http404('')
+
+    raise Http404
