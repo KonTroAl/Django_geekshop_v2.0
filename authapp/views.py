@@ -98,7 +98,6 @@ def verify(request, user_id, hash):
         user.activation_key = None
         user.save()
         auth.login(request, user)
-        messages.success(request, 'Вы авторизованы, активация аккаунта прошла успешно!')
-        return HttpResponseRedirect(reverse('index'))
 
-    raise Http404
+    return render(request, 'authapp/verification.html')
+
