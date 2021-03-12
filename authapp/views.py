@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django.utils.decorators import method_decorator
+from django.http import Http404
 
 
 from authapp.forms import UserLoginForm, UserRegisterForm, UserProfileForm
@@ -87,3 +88,12 @@ class UserProfileView(UpdateView):
 #         'baskets': Basket.objects.filter(user=request.user),
 #     }
 #     return render(request, 'authapp/profile.html', context)
+
+def verify(request, user_id, hash):
+    user = User.objects.get(pk=user_id)
+    if user.activation_key == hash and not user.is_activation_key_expired():
+        user.is_active = True
+        user.activation_key = None
+        user.save()
+        return HttpResponseRedirect(reverse('index'))
+    raise Http404('')
