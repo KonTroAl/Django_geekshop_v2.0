@@ -3,3 +3,4 @@ __pycache__/
 db.sqlite3
 media/
 tmp/
+my_geekshop/vk.json
