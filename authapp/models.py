@@ -44,4 +44,4 @@ class ShopUserProfile(models.Model):
     @receiver(post_save, sender=User)
     def save_user_profile(sender, instance, **kwargs):
         instance.shopuserprofile.save()
-        user = models.OneToOneField(User, unique=True, null=False, db_index=True, on_delete=models.CASCADE)
+
