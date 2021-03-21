@@ -27,8 +27,8 @@ class ShopUserProfile(models.Model):
     FEMALE = 'W'
 
     GENDER_CHOICES = (
-        (MALE, 'М'),
-        (FEMALE, 'Ж'),
+        (MALE, 'Мужской'),
+        (FEMALE, 'Женский'),
     )
 
     user = models.OneToOneField(User, unique=True, null=False, db_index=True, on_delete=models.CASCADE)

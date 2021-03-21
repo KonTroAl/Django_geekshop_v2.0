@@ -1,16 +1,17 @@
 from django.shortcuts import render, HttpResponseRedirect, get_object_or_404
 from django.contrib import auth, messages
 from django.urls import reverse, reverse_lazy
+from django.db import transaction
+from django.forms import inlineformset_factory
 from django.contrib.auth.decorators import login_required
-from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
+from django.views.generic.detail import DetailView
 from django.contrib.auth.views import LoginView
 from django.utils.decorators import method_decorator
-from django.http import Http404
 
 from authapp.forms import UserLoginForm, UserRegisterForm, UserProfileForm, ShopUserProfileEditForm
 from basketapp.models import Basket
-from authapp.models import User
+from authapp.models import User, ShopUserProfile
 from authapp.utils import send_verify_mail
 
 
@@ -19,6 +20,7 @@ from authapp.utils import send_verify_mail
 class UserLoginView(LoginView):
     form_class = UserLoginForm
     template_name = 'authapp/login.html'
+
 
 # def login(request):
 #     if request.method == 'POST':
@@ -72,44 +74,61 @@ def logout(request):
     return HttpResponseRedirect(reverse('index'))
 
 
-# class UserProfileView(UpdateView):
-#     model = User
-#     template_name = 'authapp/profile.html'
-#     form_class = UserProfileForm
-#
-#     # def get_context_data(self, **kwargs):
-#     #     context = super(UserProfileView, self).get_context_data(**kwargs)
-#     #     context['profile_form'] = ShopUserProfileEditForm(instance=pk.shopuserprofile)
-#     #     return context
-#
-#     def get_success_url(self):
-#         return reverse_lazy('auth:profile', args=[self.kwargs['pk']])
-#
-#     @method_decorator(login_required)
-#     def dispatch(self, request, *args, **kwargs):
-#         return super(UserProfileView, self).dispatch(request, *args, **kwargs)
+class UserProfileView(UpdateView):
+    model = User
+    template_name = 'authapp/profile.html'
+    form_class = UserProfileForm
 
-@login_required
-def profile(request):
-    if request.method == 'POST':
-        form = UserProfileForm(data=request.POST, files=request.FILES, instance=request.user)
-        profile_form = ShopUserProfileEditForm(data=request.POST, instance=request.user.shopuserprofile)
-        if form.is_valid() and profile_form.is_valid():
-            form.save()
-            profile_form.save()
-            return HttpResponseRedirect(reverse('auth:profile'))
-    else:
-        form = UserProfileForm(instance=request.user)
-        profile_form = ShopUserProfileEditForm(instance=request.user.shopuserprofile)
+    def get_context_data(self, **kwargs):
+        context = super(UserProfileView, self).get_context_data(**kwargs)
+        ProfileFormSet = inlineformset_factory(User, ShopUserProfile, form=ShopUserProfileEditForm, extra=1)
+        context['basket'] = Basket.objects.filter(user=self.request.user)
 
-    context = {
-        'title': 'Profile',
-        'form': form,
-        'profile_form': profile_form,
-        'baskets': Basket.objects.filter(user=request.user),
-    }
+        if self.request.POST:
+            context['profile_form'] = ProfileFormSet(self.request.POST, instance=self.object)
+        else:
+            context['profile_form'] = ProfileFormSet(instance=self.object)
+        return context
 
-    return render(request, 'authapp/profile.html', context)
+    def get_success_url(self):
+        return reverse_lazy('auth:profile', args=[self.kwargs['pk']])
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        profile_form = context['profile_form']
+
+        with transaction.atomic():
+            form.instance.user = self.request.user
+            self.object = form.save()
+            if profile_form.is_valid():
+                profile_form.instance = self.object
+                profile_form.save()
+
+        return super().form_valid(form)
+
+
+
+# @login_required
+# def profile(request):
+#     if request.method == 'POST':
+#         form = UserProfileForm(data=request.POST, files=request.FILES, instance=request.user)
+#         profile_form = ShopUserProfileEditForm(data=request.POST, instance=request.user.shopuserprofile)
+#         if form.is_valid() and profile_form.is_valid():
+#             form.save()
+#             profile_form.save()
+#             return HttpResponseRedirect(reverse('auth:profile'))
+#     else:
+#         form = UserProfileForm(instance=request.user)
+#         profile_form = ShopUserProfileEditForm(instance=request.user.shopuserprofile)
+#
+#     context = {
+#         'title': 'Profile',
+#         'form': form,
+#         'profile_form': profile_form,
+#         'baskets': Basket.objects.filter(user=request.user),
+#     }
+#
+#     return render(request, 'authapp/profile.html', context)
 
 
 def verify(request, user_id, hash):
