@@ -2,28 +2,32 @@
 {% load staticfiles %}
 
 {% block content %}
-    {% include 'ordersapp/includes/inc_order_summary.html' %}
-   <div class="basket_list">
-       {% for item in object.orderitems.select_related %}
-           <div class="basket_record">
-               <img src="/media/{{ item.product.image }}"
-                    alt="{{ item.product.short_desc }}">
-               <span class="category_name">
+    <div class="container">
+
+        {% include 'ordersapp/includes/inc_order_summary.html' %}
+
+        <div class="col-lg-4 col-md-6 mb-4">
+                {% for item in object.orderitems.select_related %}
+                    <div class="card h-100">
+                        <img src="/media/{{ item.product.image }}"
+                             alt="{{ item.product.short_desc }}">
+                        <span class="category_name">
                    {{ item.product.category.name }}
                </span>
-               <span class="product_name">{{ item.product.name }}</span>
-               <span class="product_price">
+                        <span class="product_name">{{ item.product.name }}</span>
+                        <span class="product_price">
                    {{ item.product.price }}&nbspруб
                </span>
-               <span class="product_quantitiy">
+                        <span class="product_quantitiy">
                    x {{ item.quantity }} шт.
                </span>
-               <span class="product_cost">
-                    = {{ item.get_product_cost }}&nbspруб
+                        <span class="product_cost">
+                    = {{ item.product_cost }}&nbspруб
                </span>
-           </div>
-       {% endfor %}
-   </div>
-   {% include 'ordersapp/includes/inc_order_actions.html' %}
+                    </div>
+                {% endfor %}
+            </div>
 
+        {% include 'ordersapp/includes/inc_order_actions.html' %}
+    </div>
 {% endblock %}
