@@ -31,12 +31,6 @@ class ProductsList(ListView):
     ordering = 'name'
     queryset = Product.objects.all()
 
-    # def __init__(self, category_id):
-    #     super(ProductsList, self).__init__(category_id)
-    #     self.category_id = category_id
-
-
-
     def get_context_data(self, **kwargs):
         context = super(ProductsList, self).get_context_data(**kwargs)
         context['categories'] = categories
