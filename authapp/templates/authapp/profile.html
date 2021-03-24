@@ -6,7 +6,6 @@
 {% endblock %}
 
 {% block content %}
-    {{ status }}
     <div class="container">
         <div class="row">
             <div class="col-lg-7">
@@ -60,18 +59,7 @@
                         <div class="col-lg-6">
                             {{ profile_form.as_p }}
                         </div>
-{#                        <div class="col-lg-6">#}
-{#                            <label class="small mb-1" for="{{ profile_form.tagline.id_for_lable }}">Теги</label>#}
-{#                            {{ profile_form.tagline }}#}
-{#                        </div>#}
-                        {#                        <div class="col-lg-6">#}
-                        {#                            <label class="small mb-1" for="{{ profile_form.aboutMe.id_for_lable }}">О себе</label>#}
-                        {#                            {{ profile_form.aboutMe }}#}
-                        {#                        </div>#}
-                        {#                        <div class="col-lg-6">#}
-                        {#                            <label class="small mb-1" for="{{ profile_form.gender.id_for_lable }}">Пол</label>#}
-                        {#                            {{ profile_form.gender }}#}
-                        {#                        </div>#}
+
                         <div class="col-lg-6" style="margin-top: 33px;">
                             <input class="btn btn-info btn-block" type="submit" value="Сохранить">
                         </div>

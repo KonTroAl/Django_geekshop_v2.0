@@ -82,7 +82,7 @@ class UserProfileView(UpdateView):
     def get_context_data(self, **kwargs):
         context = super(UserProfileView, self).get_context_data(**kwargs)
         ProfileFormSet = inlineformset_factory(User, ShopUserProfile, form=ShopUserProfileEditForm, extra=1)
-        context['basket'] = Basket.objects.filter(user=self.request.user)
+        context['baskets'] = Basket.objects.filter(user=self.request.user)
 
         if self.request.POST:
             context['profile_form'] = ProfileFormSet(self.request.POST, instance=self.object)
