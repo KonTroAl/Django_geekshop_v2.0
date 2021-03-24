@@ -36,6 +36,9 @@
                     <a class="nav-link" href="{% url 'products:index' %}">Каталог <i class="fas fa-shopping-bag"></i>
                     </a>
                 </li>
+                <li class="nav-item nav-link">
+                    In Basket: {{ basket_count }}
+                </li>
 
                 {% if user.is_authenticated %}
                     <li class="nav-item">
