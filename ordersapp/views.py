@@ -3,6 +3,7 @@ from django.urls import reverse_lazy, reverse
 from django.forms import inlineformset_factory
 from django.db import transaction
 from django.shortcuts import get_object_or_404, HttpResponseRedirect
+from django.http import JsonResponse
 
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.views.generic.detail import DetailView
@@ -10,6 +11,7 @@ from django.views.generic.detail import DetailView
 from ordersapp.models import Order, OrderItem
 from ordersapp.forms import OrderForm, OrderItemForm
 from basketapp.models import Basket
+from mainapp.models import Product
 
 
 # Create your views here.
@@ -123,3 +125,11 @@ def order_forming_complete(request, pk):
     order.save()
 
     return HttpResponseRedirect(reverse('ordersapp:order_list'))
+
+def get_product_price(request, pk):
+    if request.is_ajax():
+        product = Product.objects.filter(pk=int(pk)).first()
+        if product:
+            return JsonResponse({'price': product.price})
+        else:
+            return JsonResponse({'price': 0})

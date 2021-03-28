@@ -3,6 +3,7 @@
 
 {% block content %}
     <div class="container">
+        <div style="height: 100px"></div>
         {% include 'ordersapp/includes/inc_order_summary.html' %}
         <div class="order_form">
             <form action="" method="post">
@@ -15,7 +16,7 @@
                             <thead>
                             <tr>
                                 {% for field in form.visible_fields %}
-                                    <th class="{% cycle 'td1' 'td2' 'td3' %} order formset_td">
+                                    <th class="{% cycle 'td1' 'td2' 'td3' 'td4' %} order formset_td">
                                         {{ field.label|capfirst }}
                                     </th>
                                 {% endfor %}
@@ -36,8 +37,8 @@
                                     {% else %}
                                         {% if field.value %}
                                             <span class="orderitems-{{ forloop.parentloop.counter0 }}-price">
-                                                {{ field.value }} rub.
-                                            </span>
+                                        {{ field.value }}
+                                    </span> руб
                                         {% endif %}
                                     {% endif %}
                                 </td>
@@ -45,7 +46,7 @@
                         </tr>
                     {% endfor %}
                 </table>
-                <button type="submit" value="сохранить" class="btn btn-success btn-round form-control last">сохранить
+                <button type="submit" value="сохранить" class="btn btn-default btn-round form-control last">сохранить
                 </button>
                 {% include 'ordersapp/includes/inc_order_actions.html' %}
             </form>
