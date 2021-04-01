@@ -3,6 +3,9 @@ from django.urls import reverse_lazy, reverse
 from django.forms import inlineformset_factory
 from django.db import transaction
 from django.shortcuts import get_object_or_404, HttpResponseRedirect
+from django.http import JsonResponse
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
 
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.views.generic.detail import DetailView
@@ -10,6 +13,7 @@ from django.views.generic.detail import DetailView
 from ordersapp.models import Order, OrderItem
 from ordersapp.forms import OrderForm, OrderItemForm
 from basketapp.models import Basket
+from mainapp.models import Product
 
 
 # Create your views here.
@@ -19,6 +23,10 @@ class OrderList(ListView):
 
     def get_queryset(self):
         return Order.objects.filter(user=self.request.user)
+
+    @method_decorator(login_required())
+    def dispatch(self, request, *args, **kwargs):
+        return super(OrderList, self).dispatch(request, *args, **kwargs)
 
 
 class OrderItemsCreate(CreateView):
@@ -64,6 +72,10 @@ class OrderItemsCreate(CreateView):
 
         return super().form_valid(form)
 
+    @method_decorator(login_required())
+    def dispatch(self, request, *args, **kwargs):
+        return super(OrderItemsCreate, self).dispatch(request, *args, **kwargs)
+
 
 class OrderItemsUpdate(UpdateView):
     model = Order
@@ -107,6 +119,10 @@ class OrderDelete(DeleteView):
     model = Order
     success_url = reverse_lazy('ordersapp:order_list')
 
+    @method_decorator(login_required())
+    def dispatch(self, request, *args, **kwargs):
+        return super(OrderDelete, self).dispatch(request, *args, **kwargs)
+
 
 class OrderRead(DetailView):
     model = Order
@@ -123,3 +139,11 @@ def order_forming_complete(request, pk):
     order.save()
 
     return HttpResponseRedirect(reverse('ordersapp:order_list'))
+
+def get_product_price(request, pk):
+    product = Product.objects.filter(pk=int(pk)).first()
+    if product:
+        return JsonResponse({'price': product.price})
+
+    return JsonResponse({'price': 0})
+

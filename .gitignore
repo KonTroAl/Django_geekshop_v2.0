@@ -4,3 +4,5 @@ db.sqlite3
 media/
 tmp/
 my_geekshop/vk.json
+requirements.dev.txt
+urls.txt
