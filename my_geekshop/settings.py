@@ -94,6 +94,8 @@ if DEBUG:
 
 ROOT_URLCONF = 'my_geekshop.urls'
 
+SHELL_PLUS_PRINT_SQL = True
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
