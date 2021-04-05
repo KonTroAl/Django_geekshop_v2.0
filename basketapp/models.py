@@ -1,6 +1,7 @@
 from django.db import models
 from authapp.models import User
 from mainapp.models import Product
+from django.utils.functional import cached_property
 
 from django.utils.timezone import now
 from datetime import timedelta
@@ -29,6 +30,7 @@ class Basket(models.Model):
 
     def sum(self):
         return self.quantity * self.product.price
+
 
     def total_quantity(self):
         baskets = Basket.objects.filter(user=self.user)

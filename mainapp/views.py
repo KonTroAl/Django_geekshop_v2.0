@@ -44,7 +44,7 @@ class ProductsList(ListView):
             return Product.objects.all()
 
 
-categories = ProductCategory.objects.all()
+categories = ProductCategory.get_all()
 
 products = Product.objects.all()
 
