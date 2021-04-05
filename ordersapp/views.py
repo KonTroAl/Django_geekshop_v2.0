@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404, HttpResponseRedirect
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import cache_page
 
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.views.generic.detail import DetailView
@@ -140,6 +141,7 @@ def order_forming_complete(request, pk):
 
     return HttpResponseRedirect(reverse('ordersapp:order_list'))
 
+@cache_page(120)
 def get_product_price(request, pk):
     product = Product.objects.filter(pk=int(pk)).first()
     if product:
