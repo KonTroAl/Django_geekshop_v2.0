@@ -2,6 +2,7 @@ from django.db import models
 
 from django.conf import settings
 from mainapp.models import Product
+from django.db.models import F
 
 # Create your models here.
 
@@ -50,7 +51,7 @@ class Order(models.Model):
 
     def delete(self):
         for order_item in self.orderitems.select_related():
-            order_item.product.quantity += order_item.quantity
+            order_item.product.quantity = F('quantity') + order_item.quantity
             order_item.product.save()
 
         self.is_active = False
