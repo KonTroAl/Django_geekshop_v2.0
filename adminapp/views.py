@@ -135,10 +135,11 @@ def admin_category_create(request):
     context = {'form': form}
     return render(request, 'adminapp/admin-category-create.html', context)
 
+
 def db_profile_by_type(prefix, type, queries):
-   update_queries = list(filter(lambda x: type in x['sql'], queries))
-   print(f'db_profile {type} for {prefix}:')
-   [print(query['sql']) for query in update_queries]
+    update_queries = list(filter(lambda x: type in x['sql'], queries))
+    print(f'db_profile {type} for {prefix}:')
+    [print(query['sql']) for query in update_queries]
 
 
 class ProductCategoryUpdateView(UpdateView):

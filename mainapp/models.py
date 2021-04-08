@@ -10,6 +10,8 @@ class ProductCategory(models.Model):
     name = models.CharField(max_length=64, unique=True)
     description = models.TextField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
+    # discount = models.IntegerField(default=0, verbose_name='скидка')
+    # discount = models.IntegerField(label='скидка', required=False, min_value=0, max_value=90, initial=0)
 
     def __str__(self):
         return self.name
