@@ -2,6 +2,7 @@ from django.db import models
 from authapp.models import User
 from mainapp.models import Product
 from django.utils.functional import cached_property
+from django.db.models import F
 
 from django.utils.timezone import now
 from datetime import timedelta
@@ -41,7 +42,7 @@ class Basket(models.Model):
         return sum(basket.sum() for basket in baskets)
 
     def delete(self, using=None, keep_parents=False):
-        self.product.quantity += self.quantity
+        self.product.quantity = F('quantity') + self.quantity
         self.product.save()
         
         super(Basket, self).delete()
@@ -51,6 +52,7 @@ class Basket(models.Model):
             self.product.quantity -= self.quantity - Basket.objects.get(pk=self.pk).quantity
         else:
             self.product.quantity -= self.quantity
+
 
         self.product.save()
 
