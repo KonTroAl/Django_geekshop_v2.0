@@ -23,8 +23,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '#)7k(!(l(2%wa8g4xo=bbpfooomjr9i6qc4#mm#gos!s0%01ut'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 TESTING_MODE = 'test' in sys.argv
+DEBUG_TOOLBAR = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -65,7 +66,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 
-if DEBUG:
+if DEBUG_TOOLBAR:
     INSTALLED_APPS += ['debug_toolbar', ]
 
     MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware', ]
@@ -131,16 +132,20 @@ DATABASES = {
     }
 }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'geekshop',
-#         'USER': 'postgres',
-#         'PASSWORD': '123456',
-#         'HOST': '127.0.0.1',
-#         'PORT': '5432',
-#     }
-# }
+DATABASE_POSTGRESQL = False
+
+if DATABASE_POSTGRESQL:
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'geekshop',
+            'USER': 'postgres',
+            'PASSWORD': '123456',
+            'HOST': '127.0.0.1',
+            'PORT': '5432',
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
