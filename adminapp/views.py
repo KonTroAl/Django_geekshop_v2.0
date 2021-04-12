@@ -1,4 +1,6 @@
 from django.shortcuts import render, HttpResponseRedirect
+from django.db import connection
+from django.db.models import F
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.decorators import user_passes_test
 from django.views.generic.list import ListView
@@ -22,6 +24,7 @@ class UserListView(ListView):
     @method_decorator(user_passes_test(lambda u: u.is_superuser))
     def dispatch(self, request, *args, **kwargs):
         return super(UserListView, self).dispatch(request, *args, **kwargs)
+
 
 # @user_passes_test(lambda u: u.is_superuser)
 # def admin_users_read(request):
@@ -97,6 +100,7 @@ class UserDeleteView(DeleteView):
         self.object.save()
         return HttpResponseRedirect(self.get_success_url())
 
+
 # @user_passes_test(lambda u: u.is_superuser)
 # def admin_users_delete(request, id):
 #     user = User.objects.get(id=id)
@@ -132,21 +136,50 @@ def admin_category_create(request):
     return render(request, 'adminapp/admin-category-create.html', context)
 
 
-@user_passes_test(lambda u: u.is_superuser)
-def admin_category_update(request, id):
-    category = ProductCategory.objects.get(id=id)
-    if request.method == 'POST':
-        form = CategoryAdminForm(data=request.POST, instance=category)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse('admins:admin_category_read'))
-    else:
-        form = CategoryAdminForm(instance=category)
-    context = {
-        'form': form,
-        'current_category': category,
-    }
-    return render(request, 'adminapp/admin-category-update-delete.html', context)
+def db_profile_by_type(prefix, type, queries):
+    update_queries = list(filter(lambda x: type in x['sql'], queries))
+    print(f'db_profile {type} for {prefix}:')
+    [print(query['sql']) for query in update_queries]
+
+
+class ProductCategoryUpdateView(UpdateView):
+    model = ProductCategory
+    template_name = 'adminapp/admin-category-update-delete.html'
+    success_url = reverse_lazy('admins:admin_category_read')
+    form_class = CategoryAdminForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        category = ProductCategory.objects.get(id=self.kwargs['pk'])
+        context['current_category'] = category
+        return context
+
+    def form_valid(self, form):
+        if 'discount' in form.cleaned_data:
+            discount = form.cleaned_data['discount']
+            if discount:
+                self.object.product_set.update(price=F('price') * (1 - discount / 100))
+                db_profile_by_type(self.__class__, 'UPDATE', connection.queries)
+
+        return super().form_valid(form)
+
+
+# @user_passes_test(lambda u: u.is_superuser)
+# def admin_category_update(request, id):
+#     category = ProductCategory.objects.get(id=id)
+#     if request.method == 'POST':
+#         form = CategoryAdminForm(data=request.POST, instance=category)
+#         if form.is_valid():
+#             form.save()
+#             return HttpResponseRedirect(reverse('admins:admin_category_read'))
+#     else:
+#         form = CategoryAdminForm(instance=category)
+#     context = {
+#         'form': form,
+#         'current_category': category,
+#     }
+#     return render(request, 'adminapp/admin-category-update-delete.html', context)
+
 
 @user_passes_test(lambda u: u.is_superuser)
 def admin_category_delete(request, id):
