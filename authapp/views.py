@@ -49,7 +49,7 @@ class UserCreateView(CreateView):
         self.object = form.save()
         send_verify_mail(self.object)
         messages.success(self.request,
-                         'Вы успешно зарегестрировались! Проверьте почту для активации аккаунта на нашем сайте!')
+                         'Вы успешно зарегистрировались! Проверьте почту для активации аккаунта на нашем сайте!')
         return super().form_valid(form)
 
 
